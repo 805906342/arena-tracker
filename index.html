@@ -1004,7 +1004,7 @@ function renderGrid() {
         var homo = searchPy && (("-" + c._tp + "-").indexOf("-" + searchPy + "-") >= 0 || ("-" + c._np + "-").indexOf("-" + searchPy + "-") >= 0);
         isMatch = direct || homo;
       } else {
-        var py = c._tp.indexOf(search) >= 0 || c._np.indexOf(search) >= 0;
+        var py = (("-" + c._tp + "-").indexOf("-" + search + "-") >= 0) || (("-" + c._np + "-").indexOf("-" + search + "-") >= 0);
         isMatch = direct || py;
       }
     }
