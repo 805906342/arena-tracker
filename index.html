@@ -846,7 +846,7 @@ function getImg(id) {
 
 function toPinyin(str) {
   if (!pinyinFn) return "";
-  return pinyinFn(str, { toneType: "none", type: "array" }).join("").toLowerCase();
+  return pinyinFn(str, { toneType: "none", type: "array" }).join("-").toLowerCase();
 }
 
 // Init champions
