@@ -1012,7 +1012,7 @@ function renderGrid() {
 
     card.className = cls;
     card.setAttribute("data-id", c.id);
-    card.onclick = function() { adminUncompleteChamp(c.id); };
+    card.onclick = function() { if (!isAdminMode) return; adminUncompleteChamp(c.id); };
     card.oncontextmenu = function(e) {
       if (!isAdminMode) return;
       e.preventDefault();
