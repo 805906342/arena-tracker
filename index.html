@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>斗魂竞技场赛季旅程</title>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  background: #010a13;
+  color: #f0e6d2;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(0,100,120,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(80,40,120,0.1) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Login overlay */
+.login-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(1,10,19,0.95);
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  z-index: 9999;
+}
+.login-overlay.hidden { display: none; }
+
+.login-box {
+  width: 340px;
+  background: linear-gradient(180deg, #0a1a2a 0%, #061220 100%);
+  border: 1px solid #785a28;
+  padding: 32px 28px;
+  position: relative;
+}
+.login-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #c89b3c, #f0e6d2, #c89b3c, transparent);
+}
+.login-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #c89b3c;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+.login-tabs {
+  display: -webkit-flex;
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #3a4a5a;
+}
+.login-tab {
+  -webkit-flex: 1;
+  flex: 1;
+  height: 36px;
+  background: none;
+  border: none;
+  color: #5a6a7a;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  outline: none;
+}
+.login-tab.active {
+  color: #c89b3c;
+  border-bottom-color: #c89b3c;
+}
+.login-field {
+  margin-bottom: 14px;
+}
+.login-field label {
+  display: block;
+  font-size: 12px;
+  color: #7a8a9a;
+  margin-bottom: 4px;
+}
+.login-field input {
+  width: 100%;
+  height: 36px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a;
+  color: #f0e6d2;
+  padding: 0 12px;
+  font-size: 13px;
+  outline: none;
+}
+.login-field input:focus { border-color: #c89b3c; }
+.login-submit {
+  width: 100%;
+  height: 38px;
+  margin-top: 8px;
+  background: linear-gradient(180deg, #c89b3c 0%, #785a28 100%);
+  border: 1px solid #785a28;
+  color: #010a13;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  letter-spacing: 2px;
+}
+.login-submit:hover {
+  background: linear-gradient(180deg, #f0e6d2 0%, #c89b3c 100%);
+}
+.login-submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.login-error {
+  color: #e74c3c;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 10px;
+  min-height: 16px;
+}
+.admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 2px;
+}
+.admin-row input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0 6px 0 0;
+  cursor: pointer;
+  accent-color: #c89b3c;
+}
+.admin-row label {
+  font-size: 13px;
+  color: #c8a060;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-badge {
+  display: none;
+  position: fixed;
+  top: 8px;
+  right: 110px;
+  background: rgba(200,155,60,0.15);
+  border: 1px solid #c89b3c;
+  color: #c89b3c;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  z-index: 100;
+  pointer-events: none;
+}
+.admin-badge.show { display: block; }
+
+/* App container */
+.app-container {
+  position: relative;
+  z-index: 1;
+  width: 96vw;
+  height: 96vh;
+  background: linear-gradient(180deg, #0a1a2a 0%, #061220 100%);
+  border: 1px solid #785a28;
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.8),
+    inset 0 0 60px rgba(0,0,0,0.4);
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  overflow: hidden;
+}
+.app-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #c89b3c, #f0e6d2, #c89b3c, transparent);
+}
+.corner {
+  position: absolute;
+  width: 16px; height: 16px;
+  border: 2px solid #785a28;
+}
+.corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.corner-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.header {
+  padding: 14px 24px 0;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.title-row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.title-row h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f0e6d2;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(200,155,60,0.3);
+}
+
+.main-content {
+  -webkit-flex: 1;
+  flex: 1;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  padding: 10px 20px 8px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Toolbar */
+.toolbar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  margin-bottom: 12px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.search-box {
+  position: relative;
+  width: 300px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.search-box input {
+  width: 100%;
+  height: 32px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a;
+  color: #f0e6d2;
+  padding: 0 12px 0 32px;
+  font-size: 13px;
+  outline: none;
+}
+.search-box input:focus { border-color: #c89b3c; }
+.search-box input::-webkit-input-placeholder { color: #5a6a7a; }
+.search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  margin-top: -7px;
+  width: 15px; height: 15px;
+  color: #5a6a7a;
+}
+
+.skin-btn {
+  height: 32px;
+  padding: 0 14px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a;
+  color: #c89b3c;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: 10px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.skin-btn:hover { border-color: #c89b3c; }
+
+/* Scan button (desktop only) */
+.scan-wrap {
+  position: relative;
+  margin-left: 10px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.scan-btn {
+  height: 32px;
+  padding: 0 14px;
+  background: linear-gradient(180deg, rgba(120,90,40,0.3) 0%, rgba(60,40,15,0.3) 100%);
+  border: 1px solid #785a28;
+  color: #c89b3c;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.scan-btn:hover {
+  background: linear-gradient(180deg, #c89b3c 0%, #785a28 100%);
+  color: #010a13;
+}
+.scan-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: rgba(30,40,50,0.5);
+  border-color: #3a4a5a;
+  color: #5a6a7a;
+}
+.scan-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: linear-gradient(180deg, #0a1428 0%, #010a13 100%);
+  border: 1px solid #785a28;
+  z-index: 300;
+  min-width: 140px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+}
+.scan-dropdown.visible { display: block; }
+.scan-dropdown-item {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #c89b3c;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(120,90,40,0.2);
+}
+.scan-dropdown-item:hover {
+  background: rgba(200,155,60,0.15);
+}
+.scan-dropdown-item:last-child { border-bottom: none; }
+
+/* Skin panel */
+.skin-panel-wrap {
+  position: relative;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.skin-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  z-index: 200;
+  background: linear-gradient(180deg, #0a1428 0%, #010a13 100%);
+  border: 1px solid #785a28;
+  padding: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+  width: 420px;
+}
+.skin-panel.visible { display: block; }
+.skin-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c89b3c;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.skin-grid {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin: -4px;
+}
+.skin-option {
+  width: 25%;
+  padding: 4px;
+}
+.skin-option-inner {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  padding: 8px 4px;
+  background: rgba(10,20,30,0.6);
+  border: 1px solid #1a2a3a;
+  cursor: pointer;
+}
+.skin-option-inner:hover { border-color: #c89b3c; }
+.skin-option-inner.active { border-color: #c89b3c; background: rgba(200,155,60,0.1); }
+.skin-preview {
+  width: 40px;
+  height: 40px;
+  background: #1a2a3a;
+}
+.skin-option-name {
+  font-size: 10px;
+  color: #a0a0a0;
+  text-align: center;
+  white-space: nowrap;
+  margin-top: 5px;
+}
+.skin-option-inner.active .skin-option-name { color: #c89b3c; }
+
+/* Champion grid */
+.champion-grid {
+  -webkit-flex: 1;
+  flex: 1;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-align-content: flex-start;
+  align-content: flex-start;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 4px;
+}
+.champion-grid::-webkit-scrollbar { width: 6px; }
+.champion-grid::-webkit-scrollbar-track { background: #0a1520; }
+.champion-grid::-webkit-scrollbar-thumb { background: #3a4a5a; border-radius: 3px; }
+.champion-grid::-webkit-scrollbar-thumb:hover { background: #c89b3c; }
+
+.champion-card {
+  width: 66px;
+  margin: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.champion-card:hover {
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+.champion-portrait {
+  width: 66px;
+  height: 66px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #1a2a3a;
+}
+.champion-title {
+  text-align: center;
+  font-size: 10px;
+  color: #a0a0a0;
+  padding: 3px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.champion-name {
+  text-align: center;
+  font-size: 9px;
+  color: #7a8a9a;
+  padding: 1px 0 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.champion-card.completed .champion-title { color: #c89b3c; }
+.champion-card.dimmed {
+  opacity: 0.25;
+  filter: gray;
+  filter: grayscale(0.7);
+}
+
+/* Border skins */
+.skin-gold .champion-card.completed .champion-portrait { border-color: #c89b3c; }
+.skin-platinum .champion-card.completed .champion-portrait { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
+.skin-obsidian .champion-card.completed .champion-portrait { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
+.skin-emerald .champion-card.completed .champion-portrait { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
+.skin-ruby .champion-card.completed .champion-portrait { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
+.skin-sapphire .champion-card.completed .champion-portrait { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
+
+.skin-rainbow .champion-card.completed .champion-portrait { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
+.skin-electric .champion-card.completed .champion-portrait { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
+.skin-inferno .champion-card.completed .champion-portrait { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
+.skin-frost .champion-card.completed .champion-portrait { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
+.skin-void .champion-card.completed .champion-portrait { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
+.skin-holy .champion-card.completed .champion-portrait { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
+
+@keyframes rainbowBorder {
+  0%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
+  16%{border-color:#ff8800;box-shadow:0 0 8px rgba(255,136,0,0.6)}
+  33%{border-color:#ffff00;box-shadow:0 0 8px rgba(255,255,0,0.6)}
+  50%{border-color:#00ff00;box-shadow:0 0 8px rgba(0,255,0,0.6)}
+  66%{border-color:#0088ff;box-shadow:0 0 8px rgba(0,136,255,0.6)}
+  83%{border-color:#8800ff;box-shadow:0 0 8px rgba(136,0,255,0.6)}
+  100%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
+}
+@keyframes electricPulse {
+  0%,100%{border-color:#00d4ff;box-shadow:0 0 5px rgba(0,212,255,0.4),0 0 10px rgba(0,212,255,0.2)}
+  50%{border-color:#fff;box-shadow:0 0 12px rgba(0,212,255,0.9),0 0 24px rgba(0,212,255,0.5),inset 0 0 8px rgba(0,212,255,0.3)}
+}
+@keyframes infernoBurn {
+  0%,100%{border-color:#ff4400;box-shadow:0 0 6px rgba(255,68,0,0.5),0 0 12px rgba(255,100,0,0.3)}
+  25%{border-color:#ffaa00;box-shadow:0 0 10px rgba(255,170,0,0.7),0 0 20px rgba(255,68,0,0.4)}
+  50%{border-color:#ff2200;box-shadow:0 0 14px rgba(255,34,0,0.8),0 0 28px rgba(255,68,0,0.5),inset 0 0 10px rgba(255,100,0,0.2)}
+  75%{border-color:#ffcc00;box-shadow:0 0 10px rgba(255,204,0,0.7),0 0 20px rgba(255,68,0,0.4)}
+}
+@keyframes frostShimmer {
+  0%,100%{border-color:#a8f0ff;box-shadow:0 0 5px rgba(168,240,255,0.4),inset 0 0 6px rgba(168,240,255,0.1)}
+  50%{border-color:#fff;box-shadow:0 0 12px rgba(168,240,255,0.8),0 0 24px rgba(120,200,255,0.4),inset 0 0 10px rgba(200,240,255,0.2)}
+}
+@keyframes voidSwirl {
+  0%,100%{border-color:#9b30ff;box-shadow:0 0 6px rgba(155,48,255,0.5),0 0 12px rgba(120,0,200,0.3)}
+  33%{border-color:#ff00ff;box-shadow:0 0 10px rgba(255,0,255,0.6),0 0 20px rgba(155,48,255,0.4)}
+  66%{border-color:#6600cc;box-shadow:0 0 14px rgba(102,0,204,0.7),0 0 28px rgba(155,48,255,0.5),inset 0 0 8px rgba(120,0,200,0.2)}
+}
+@keyframes holyRadiate {
+  0%,100%{border-color:#fff8dc;box-shadow:0 0 5px rgba(255,248,220,0.4),0 0 10px rgba(255,220,100,0.2)}
+  50%{border-color:#fff;box-shadow:0 0 14px rgba(255,248,220,0.9),0 0 28px rgba(255,220,100,0.5),0 0 42px rgba(255,200,50,0.3),inset 0 0 10px rgba(255,248,220,0.2)}
+}
+
+.preview-rainbow { animation: rainbowBorder 2s linear infinite; border: 2px solid #ff0000; }
+.preview-electric { animation: electricPulse 1.2s ease-in-out infinite; border: 2px solid #00d4ff; }
+.preview-inferno { animation: infernoBurn 1.5s ease-in-out infinite; border: 2px solid #ff4400; }
+.preview-frost { animation: frostShimmer 2s ease-in-out infinite; border: 2px solid #a8f0ff; }
+.preview-void { animation: voidSwirl 2s ease-in-out infinite; border: 2px solid #9b30ff; }
+.preview-holy { animation: holyRadiate 2s ease-in-out infinite; border: 2px solid #fff8dc; }
+
+.total-count {
+  position: absolute;
+  bottom: 12px;
+  right: 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0e6d2;
+}
+.total-count span {
+  vertical-align: middle;
+}
+.total-count svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* Logout button */
+.logout-btn {
+  position: absolute;
+  top: 14px;
+  right: 24px;
+  height: 28px;
+  padding: 0 12px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a;
+  color: #7a8a9a;
+  font-size: 11px;
+  cursor: pointer;
+  outline: none;
+  z-index: 10;
+}
+.logout-btn:hover { border-color: #c89b3c; color: #c89b3c; }
+
+</style>
+</head>
+<body class="skin-gold">
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-title">斗魂竞技场</div>
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
+      <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
+    </div>
+    <div class="login-field">
+      <label>用户名</label>
+      <input type="text" id="loginUser" placeholder="请输入用户名" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>密码</label>
+      <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
+    </div>
+    <div class="admin-row">
+      <input type="checkbox" id="adminCheck">
+      <label for="adminCheck">管理员登录（右键标记已完成，左键标记未完成）</label>
+    </div>
+    <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="app-container" id="appContainer" style="display:none;">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <div class="admin-badge" id="adminBadge">管理员模式</div>
+  <button class="logout-btn" id="logoutBtn" type="button" onclick="doLogout()">退出登录</button>
+
+  <div class="header">
+    <div class="title-row">
+      <h1>斗魂竞技场赛季旅程</h1>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索称号或名字（支持拼音/同音字）" oninput="onSearch()">
+      </div>
+      <div class="skin-panel-wrap">
+        <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
+        <div class="skin-panel" id="skinPanel">
+          <div class="skin-panel-title">选择边框皮肤</div>
+          <div class="skin-grid" id="skinGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="champion-grid" id="championGrid"></div>
+  </div>
+
+  <div class="total-count">
+    <span id="totalCompleted">0</span><svg viewBox="0 0 24 24" fill="none" stroke="#c89b3c" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+  </div>
+</div>
+
+<script>
+var champions = [
+  { id: "Neeko", title: "万花通灵", name: "妮蔻" },
+  { id: "Skarner", title: "上古领主", name: "斯卡纳" },
+  { id: "Pantheon", title: "不屈之枪", name: "潘森" },
+  { id: "Volibear", title: "不灭狂雷", name: "沃利贝尔" },
+  { id: "Yunara", title: "不破之誓", name: "芸阿娜" },
+  { id: "Katarina", title: "不祥之刃", name: "卡特琳娜" },
+  { id: "Nilah", title: "不羁之悦", name: "尼菈" },
+  { id: "Zaahen", title: "不落魔锋", name: "亚恒" },
+  { id: "Ahri", title: "九尾妖狐", name: "阿狸" },
+  { id: "Sion", title: "亡灵战神", name: "赛恩" },
+  { id: "Lulu", title: "仙灵女巫", name: "璐璐" },
+  { id: "Soraka", title: "众星之子", name: "索拉卡" },
+  { id: "Rengar", title: "傲之追猎者", name: "雷恩加尔" },
+  { id: "Qiyana", title: "元素女皇", name: "奇亚娜" },
+  { id: "Lux", title: "光辉女郎", name: "拉克丝" },
+  { id: "Udyr", title: "兽灵行者", name: "乌迪尔" },
+  { id: "Anivia", title: "冰晶凤凰", name: "艾尼维亚" },
+  { id: "Lissandra", title: "冰霜女巫", name: "丽桑卓" },
+  { id: "Talon", title: "刀锋之影", name: "泰隆" },
+  { id: "Irelia", title: "刀锋舞者", name: "艾瑞莉娅" },
+  { id: "Sejuani", title: "北地之怒", name: "瑟庄妮" },
+  { id: "TwistedFate", title: "卡牌大师", name: "崔斯特" },
+  { id: "Aurora", title: "双界灵兔", name: "阿萝拉" },
+  { id: "Orianna", title: "发条魔灵", name: "奥莉安娜" },
+  { id: "Lillia", title: "含羞蓓蕾", name: "莉莉娅" },
+  { id: "Nami", title: "唤潮鲛姬", name: "娜美" },
+  { id: "Lucian", title: "圣枪游侠", name: "卢锡安" },
+  { id: "Poppy", title: "圣锤之毅", name: "波比" },
+  { id: "Morgana", title: "堕落天使", name: "莫甘娜" },
+  { id: "Kalista", title: "复仇之矛", name: "卡莉丝塔" },
+  { id: "Brand", title: "复仇焰魂", name: "布兰德" },
+  { id: "Heimerdinger", title: "大发明家", name: "黑默丁格" },
+  { id: "Karma", title: "天启者", name: "卡尔玛" },
+  { id: "Viktor", title: "奥术先驱", name: "维克托" },
+  { id: "Ashe", title: "寒冰射手", name: "艾希" },
+  { id: "Yone", title: "封魔剑魂", name: "永恩" },
+  { id: "Ornn", title: "山隐之焰", name: "奥恩" },
+  { id: "Taliyah", title: "岩雀", name: "塔莉垭" },
+  { id: "Trundle", title: "巨魔之王", name: "特朗德尔" },
+  { id: "Rakan", title: "幻翎", name: "洛" },
+  { id: "Hwei", title: "异画师", name: "彗" },
+  { id: "Braum", title: "弗雷尔卓德之心", name: "布隆" },
+  { id: "Akshan", title: "影哨", name: "阿克尚" },
+  { id: "Zed", title: "影流之主", name: "劫" },
+  { id: "Kayn", title: "影流之镰", name: "凯隐" },
+  { id: "Garen", title: "德玛西亚之力", name: "盖伦" },
+  { id: "Quinn", title: "德玛西亚之翼", name: "奎因" },
+  { id: "JarvanIV", title: "德玛西亚皇子", name: "嘉文四世" },
+  { id: "XinZhao", title: "德邦总管", name: "赵信" },
+  { id: "Shaco", title: "恶魔小丑", name: "萨科" },
+  { id: "Varus", title: "惩戒之箭", name: "韦鲁斯" },
+  { id: "Vex", title: "愁云使者", name: "薇古丝" },
+  { id: "Jhin", title: "戏命师", name: "烬" },
+  { id: "Hecarim", title: "战争之影", name: "赫卡里姆" },
+  { id: "Sivir", title: "战争女神", name: "希维尔" },
+  { id: "Maokai", title: "扭曲树精", name: "茂凯" },
+  { id: "Rammus", title: "披甲龙龟", name: "拉莫斯" },
+  { id: "Ezreal", title: "探险家", name: "伊泽瑞尔" },
+  { id: "Riven", title: "放逐之刃", name: "锐雯" },
+  { id: "Fiora", title: "无双剑姬", name: "菲奥娜" },
+  { id: "MasterYi", title: "无极剑圣", name: "易" },
+  { id: "Urgot", title: "无畏战车", name: "厄加特" },
+  { id: "Zilean", title: "时光守护者", name: "基兰" },
+  { id: "Ekko", title: "时间刺客", name: "艾克" },
+  { id: "Milio", title: "明烛", name: "米利欧" },
+  { id: "Bard", title: "星界游神", name: "巴德" },
+  { id: "Seraphine", title: "星籁歌姬", name: "萨勒芬妮" },
+  { id: "Vayne", title: "暗夜猎手", name: "薇恩" },
+  { id: "Aatrox", title: "暗裔剑魔", name: "亚托克斯" },
+  { id: "Syndra", title: "暗黑元首", name: "辛德拉" },
+  { id: "Shen", title: "暮光之眼", name: "慎" },
+  { id: "Zoe", title: "暮光星灵", name: "佐伊" },
+  { id: "Kled", title: "暴怒骑士", name: "克烈" },
+  { id: "Jinx", title: "暴走萝莉", name: "金克丝" },
+  { id: "Leona", title: "曙光女神", name: "蕾欧娜" },
+  { id: "Jayce", title: "未来守护者", name: "杰斯" },
+  { id: "Rumble", title: "机械公敌", name: "兰博" },
+  { id: "Kayle", title: "正义天使", name: "凯尔" },
+  { id: "Galio", title: "正义巨像", name: "加里奥" },
+  { id: "Jax", title: "武器大师", name: "贾克斯" },
+  { id: "Karthus", title: "死亡颂唱者", name: "卡尔萨斯" },
+  { id: "Amumu", title: "殇之木乃伊", name: "阿木木" },
+  { id: "Aphelios", title: "残月之肃", name: "厄斐琉斯" },
+  { id: "Nocturne", title: "永恒梦魇", name: "魔腾" },
+  { id: "Kindred", title: "永猎双子", name: "千珏" },
+  { id: "Nasus", title: "沙漠死神", name: "内瑟斯" },
+  { id: "Samira", title: "沙漠玫瑰", name: "莎弥拉" },
+  { id: "Azir", title: "沙漠皇帝", name: "阿兹尔" },
+  { id: "TahmKench", title: "河流之王", name: "塔姆" },
+  { id: "Graves", title: "法外狂徒", name: "格雷福斯" },
+  { id: "Mel", title: "流光镜影", name: "梅尔" },
+  { id: "Illaoi", title: "海兽祭司", name: "俄洛伊" },
+  { id: "Gangplank", title: "海洋之灾", name: "普朗克" },
+  { id: "Senna", title: "涤魂圣枪", name: "赛娜" },
+  { id: "Nautilus", title: "深海泰坦", name: "诺提勒斯" },
+  { id: "KogMaw", title: "深渊巨口", name: "克格莫" },
+  { id: "Fizz", title: "潮汐海灵", name: "菲兹" },
+  { id: "Locke", title: "灰烬驱魔人", name: "洛克" },
+  { id: "Gwen", title: "灵罗娃娃", name: "格温" },
+  { id: "Singed", title: "炼金术士", name: "辛吉德" },
+  { id: "Renata", title: "炼金男爵", name: "烈娜塔·戈拉斯克" },
+  { id: "Smolder", title: "炽炎雏龙", name: "斯莫德" },
+  { id: "Malphite", title: "熔岩巨兽", name: "墨菲特" },
+  { id: "Ziggs", title: "爆破鬼才", name: "吉格斯" },
+  { id: "Alistar", title: "牛头酋长", name: "阿利斯塔" },
+  { id: "Yorick", title: "牧魂人", name: "约里克" },
+  { id: "Briar", title: "狂厄蔷薇", name: "贝蕾亚" },
+  { id: "Olaf", title: "狂战士", name: "奥拉夫" },
+  { id: "Kennen", title: "狂暴之心", name: "凯南" },
+  { id: "Nidalee", title: "狂野女猎手", name: "奈德丽" },
+  { id: "Vladimir", title: "猩红收割者", name: "弗拉基米尔" },
+  { id: "Sona", title: "琴瑟仙女", name: "娑娜" },
+  { id: "Taric", title: "瓦洛兰之盾", name: "塔里克" },
+  { id: "Zac", title: "生化魔人", name: "扎克" },
+  { id: "Yasuo", title: "疾风剑豪", name: "亚索" },
+  { id: "Evelynn", title: "痛苦之拥", name: "伊芙琳" },
+  { id: "Twitch", title: "瘟疫之源", name: "图奇" },
+  { id: "Naafiri", title: "百裂冥犬", name: "纳亚菲利" },
+  { id: "Diana", title: "皎月女神", name: "黛安娜" },
+  { id: "Caitlyn", title: "皮城女警", name: "凯特琳" },
+  { id: "Vi", title: "皮城执法官", name: "蔚" },
+  { id: "LeeSin", title: "盲僧", name: "李青" },
+  { id: "Viego", title: "破败之王", name: "佛耶戈" },
+  { id: "Warwick", title: "祖安怒兽", name: "沃里克" },
+  { id: "DrMundo", title: "祖安狂人", name: "蒙多医生" },
+  { id: "Zeri", title: "祖安花火", name: "泽丽" },
+  { id: "Akali", title: "离群之刺", name: "阿卡丽" },
+  { id: "Ryze", title: "符文法师", name: "瑞兹" },
+  { id: "KSante", title: "纳祖芒荣耀", name: "奎桑提" },
+  { id: "Ivern", title: "翠神", name: "艾翁" },
+  { id: "Sett", title: "腕豪", name: "瑟提" },
+  { id: "Corki", title: "英勇投弹手", name: "库奇" },
+  { id: "Zyra", title: "荆棘之兴", name: "婕拉" },
+  { id: "Renekton", title: "荒漠屠夫", name: "雷克顿" },
+  { id: "Draven", title: "荣耀行刑官", name: "德莱文" },
+  { id: "Blitzcrank", title: "蒸汽机器人", name: "布里茨" },
+  { id: "Kaisa", title: "虚空之女", name: "卡莎" },
+  { id: "Velkoz", title: "虚空之眼", name: "维克兹" },
+  { id: "Malzahar", title: "虚空先知", name: "玛尔扎哈" },
+  { id: "Belveth", title: "虚空女皇", name: "卑尔维斯" },
+  { id: "Chogath", title: "虚空恐惧", name: "科加斯" },
+  { id: "Khazix", title: "虚空掠夺者", name: "卡兹克" },
+  { id: "Kassadin", title: "虚空行者", name: "卡萨丁" },
+  { id: "RekSai", title: "虚空遁地兽", name: "雷克塞" },
+  { id: "Tryndamere", title: "蛮族之王", name: "泰达米尔" },
+  { id: "Elise", title: "蜘蛛女皇", name: "伊莉丝" },
+  { id: "Pyke", title: "血港鬼影", name: "派克" },
+  { id: "Sylas", title: "解脱者", name: "塞拉斯" },
+  { id: "Leblanc", title: "诡术妖姬", name: "乐芙兰" },
+  { id: "Darius", title: "诺克萨斯之手", name: "德莱厄斯" },
+  { id: "Swain", title: "诺克萨斯统领", name: "斯维因" },
+  { id: "MissFortune", title: "赏金猎人", name: "厄运小姐" },
+  { id: "Teemo", title: "迅捷斥候", name: "提莫" },
+  { id: "Xerath", title: "远古巫灵", name: "泽拉斯" },
+  { id: "Fiddlesticks", title: "远古恐惧", name: "费德提克" },
+  { id: "Gnar", title: "迷失之牙", name: "纳尔" },
+  { id: "Xayah", title: "逆羽", name: "霞" },
+  { id: "Veigar", title: "邪恶小法师", name: "维迦" },
+  { id: "Gragas", title: "酒桶", name: "古拉加斯" },
+  { id: "Ambessa", title: "铁血狼母", name: "安蓓萨" },
+  { id: "Mordekaiser", title: "铁铠冥魂", name: "莫德凯撒" },
+  { id: "AurelionSol", title: "铸星龙王", name: "奥瑞利安·索尔" },
+  { id: "Rell", title: "镕铁少女", name: "芮尔" },
+  { id: "Nunu", title: "雪原双子", name: "努努和威朗普" },
+  { id: "Camille", title: "青钢影", name: "卡蜜尔" },
+  { id: "Janna", title: "风暴之怒", name: "迦娜" },
+  { id: "Thresh", title: "魂锁典狱长", name: "锤石" },
+  { id: "Yuumi", title: "魔法猫咪", name: "悠米" },
+  { id: "Cassiopeia", title: "魔蛇之拥", name: "卡西奥佩娅" },
+  { id: "Tristana", title: "麦林炮手", name: "崔丝塔娜" },
+  { id: "Annie", title: "黑暗之女", name: "安妮" },
+  { id: "MonkeyKing", title: "齐天大圣", name: "孙悟空" },
+  { id: "Shyvana", title: "龙血武姬", name: "希瓦娜" }
+];
+
+var SUPA_URL = "https://qkkglbhtszjtfrkookwv.supabase.co";
+var SUPA_KEY = "sb_publishable_aIQtugb8f-rEkLGKAVp9vQ_LaIqVnOY";
+var DD_VERSION = "16.16.1";
+
+var borderSkins = [
+  { id: "gold", name: "黄金", dynamic: false, color: "#c89b3c" },
+  { id: "platinum", name: "铂金", dynamic: false, color: "#e8e8f0" },
+  { id: "obsidian", name: "黑曜", dynamic: false, color: "#6a3da0" },
+  { id: "emerald", name: "翡翠", dynamic: false, color: "#2ecc71" },
+  { id: "ruby", name: "烈焰", dynamic: false, color: "#e74c3c" },
+  { id: "sapphire", name: "深海", dynamic: false, color: "#3498db" },
+  { id: "rainbow", name: "彩虹", dynamic: true, color: "#ff66aa" },
+  { id: "electric", name: "闪电", dynamic: true, color: "#00d4ff" },
+  { id: "inferno", name: "炼狱", dynamic: true, color: "#ff4400" },
+  { id: "frost", name: "冰霜", dynamic: true, color: "#a8f0ff" },
+  { id: "void", name: "虚空", dynamic: true, color: "#9b30ff" },
+  { id: "holy", name: "神圣", dynamic: true, color: "#fff8dc" }
+];
+
+var currentSkin = "gold";
+var currentUserId = null;
+var isAdminMode = false;
+var saveTimer = null;
+var pinyinFn = null;
+
+function getImg(id) {
+  return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
+}
+
+function toPinyin(str) {
+  if (!pinyinFn) return "";
+  return pinyinFn(str, { toneType: "none", type: "array" }).join("").toLowerCase();
+}
+
+// Init champions
+champions.forEach(function(c) { c.completed = false; c._tp = toPinyin(c.title); c._np = toPinyin(c.name); });
+
+// ===== Auth =====
+var authMode = "login";
+
+function switchTab(mode) {
+  authMode = mode;
+  document.getElementById("tabLogin").className = "login-tab" + (mode === "login" ? " active" : "");
+  document.getElementById("tabRegister").className = "login-tab" + (mode === "register" ? " active" : "");
+  document.getElementById("loginSubmit").textContent = mode === "login" ? "登录" : "注册";
+  document.getElementById("loginError").textContent = "";
+}
+
+function submitAuth() {
+  var user = document.getElementById("loginUser").value.trim();
+  var pass = document.getElementById("loginPass").value;
+  var errEl = document.getElementById("loginError");
+  if (!user || !pass) { errEl.textContent = "请输入用户名和密码"; return; }
+  if (pass.length < 6) { errEl.textContent = "密码至少6位"; return; }
+
+  document.getElementById("loginSubmit").disabled = true;
+  errEl.textContent = "";
+
+  var email = user + "@lolarena.app";
+  var isLogin = authMode === "login";
+  var endpoint = SUPA_URL + "/auth/v1/" + (isLogin ? "token?grant_type=password" : "signup");
+  var body = isLogin
+    ? JSON.stringify({ email: email, password: pass })
+    : JSON.stringify({ email: email, password: pass, data: {} });
+
+  fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPA_KEY,
+      "Authorization": "Bearer " + SUPA_KEY
+    },
+    body: body
+  })
+  .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+  .then(function(res) {
+    document.getElementById("loginSubmit").disabled = false;
+    if (!res.ok) {
+      errEl.textContent = res.data.error_description || res.data.msg || "操作失败";
+      return;
+    }
+    currentUserId = res.data.user.id;
+    isAdminMode = document.getElementById("adminCheck").checked;
+    var badge = document.getElementById("adminBadge");
+    if (badge) { if (isAdminMode) badge.className = "admin-badge show"; else badge.className = "admin-badge"; }
+    document.getElementById("adminCheck").checked = false;
+    document.getElementById("loginOverlay").classList.add("hidden");
+    document.getElementById("appContainer").style.display = "";
+    loadProgress();
+  })
+  .catch(function(e) {
+    document.getElementById("loginSubmit").disabled = false;
+    errEl.textContent = "网络错误";
+  });
+}
+
+function doLogout() {
+  currentUserId = null;
+  isAdminMode = false;
+  var badge = document.getElementById("adminBadge");
+  if (badge) badge.className = "admin-badge";
+  champions.forEach(function(c) { c.completed = false; });
+  document.getElementById("appContainer").style.display = "none";
+  document.getElementById("loginOverlay").classList.remove("hidden");
+  document.getElementById("loginUser").value = "";
+  document.getElementById("loginPass").value = "";
+  renderGrid();
+}
+
+// ===== Supabase progress =====
+function loadProgress() {
+  fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+    headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    champions.forEach(function(c) { c.completed = false; });
+    if (rows.length > 0 && rows[0].hero_ids) {
+      var ids = rows[0].hero_ids.split(",");
+      var idSet = {};
+      ids.forEach(function(id) { idSet[id.trim()] = true; });
+      champions.forEach(function(c) {
+        if (idSet[c.id]) c.completed = true;
+      });
+    }
+    renderGrid();
+  })
+  .catch(function() {});
+}
+
+function saveProgress() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function() {
+    var heroIds = champions.filter(function(c) { return c.completed; }).map(function(c) { return c.id; }).join(",");
+    var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
+    fetch(url, {
+      headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      if (rows.length > 0) {
+        return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPA_KEY,
+            "Authorization": "Bearer " + SUPA_KEY,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({ hero_ids: heroIds, updated_at: new Date().toISOString() })
+        });
+      } else {
+        return fetch(SUPA_URL + "/rest/v1/arena_progress", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPA_KEY,
+            "Authorization": "Bearer " + SUPA_KEY,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({ user_id: currentUserId, hero_ids: heroIds, updated_at: new Date().toISOString() })
+        });
+      }
+    })
+    .catch(function() {});
+  }, 500);
+}
+
+// ===== Render =====
+function renderGrid() {
+  var grid = document.getElementById("championGrid");
+  grid.innerHTML = "";
+  var rawSearch = document.getElementById("searchInput").value.trim();
+  var search = rawSearch.toLowerCase();
+  var searchPy = rawSearch ? toPinyin(rawSearch) : "";
+
+  champions.forEach(function(c) {
+    var card = document.createElement("div");
+    var cls = "champion-card";
+    if (c.completed) cls += " completed";
+
+    var isMatch = true;
+    if (search) {
+      var hasCn = /[\u4e00-\u9fff]/.test(rawSearch);
+      var direct = c.title.toLowerCase().indexOf(search) >= 0 || c.name.toLowerCase().indexOf(search) >= 0;
+      if (hasCn) {
+        var homo = searchPy && (c._tp.indexOf(searchPy) >= 0 || c._np.indexOf(searchPy) >= 0);
+        isMatch = direct || homo;
+      } else {
+        var py = c._tp.indexOf(search) >= 0 || c._np.indexOf(search) >= 0;
+        isMatch = direct || py;
+      }
+    }
+    if (search && !isMatch) cls += " dimmed";
+
+    card.className = cls;
+    card.setAttribute("data-id", c.id);
+    card.onclick = function() { adminUncompleteChamp(c.id); };
+    card.oncontextmenu = function(e) {
+      if (!isAdminMode) return;
+      e.preventDefault();
+      adminCompleteChamp(c.id);
+      return false;
+    };
+
+    var portrait = document.createElement("div");
+    portrait.className = "champion-portrait";
+    portrait.style.backgroundImage = "url('" + getImg(c.id) + "')";
+    card.appendChild(portrait);
+
+    var titleDiv = document.createElement("div");
+    titleDiv.className = "champion-title";
+    titleDiv.textContent = c.title;
+    card.appendChild(titleDiv);
+
+    var nameDiv = document.createElement("div");
+    nameDiv.className = "champion-name";
+    nameDiv.textContent = c.name;
+    card.appendChild(nameDiv);
+
+    grid.appendChild(card);
+  });
+
+  updateCount();
+}
+
+function toggleChamp(id) {
+  for (var i = 0; i < champions.length; i++) {
+    if (champions[i].id === id) {
+      champions[i].completed = !champions[i].completed;
+      break;
+    }
+  }
+  renderGrid();
+  saveProgress();
+}
+
+function adminCompleteChamp(id) {
+  for (var i = 0; i < champions.length; i++) {
+    if (champions[i].id === id) {
+      if (!champions[i].completed) {
+        champions[i].completed = true;
+        renderGrid();
+        saveProgress();
+      }
+      break;
+    }
+  }
+}
+
+function adminUncompleteChamp(id) {
+  for (var i = 0; i < champions.length; i++) {
+    if (champions[i].id === id) {
+      if (champions[i].completed) {
+        champions[i].completed = false;
+        renderGrid();
+        saveProgress();
+      }
+      break;
+    }
+  }
+}
+
+function updateCount() {
+  var count = 0;
+  champions.forEach(function(c) { if (c.completed) count++; });
+  document.getElementById("totalCompleted").textContent = count;
+}
+
+function onSearch() { renderGrid(); }
+
+// ===== Skin panel =====
+function renderSkinPanel() {
+  var grid = document.getElementById("skinGrid");
+  grid.innerHTML = "";
+  borderSkins.forEach(function(skin) {
+    var wrap = document.createElement("div");
+    wrap.className = "skin-option";
+
+    var inner = document.createElement("div");
+    inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "");
+    inner.onclick = function() { selectSkin(skin.id); };
+
+    var preview = document.createElement("div");
+    preview.className = "skin-preview";
+    if (skin.dynamic) {
+      preview.classList.add("preview-" + skin.id);
+    } else {
+      preview.style.border = "2px solid " + skin.color;
+      preview.style.boxShadow = "0 0 6px " + skin.color + "80";
+    }
+
+    var name = document.createElement("div");
+    name.className = "skin-option-name";
+    name.textContent = skin.name;
+
+    inner.appendChild(preview);
+    inner.appendChild(name);
+    wrap.appendChild(inner);
+    grid.appendChild(wrap);
+  });
+}
+
+function selectSkin(id) {
+  currentSkin = id;
+  document.body.className = "skin-" + id;
+  renderSkinPanel();
+}
+
+function toggleSkinPanel() {
+  document.getElementById("skinPanel").classList.toggle("visible");
+}
+
+document.addEventListener("click", function(e) {
+  var panel = document.getElementById("skinPanel");
+  var btn = document.getElementById("skinBtn");
+  if (panel.classList.contains("visible") && !panel.contains(e.target) && e.target !== btn) {
+    panel.classList.remove("visible");
+  }
+});
+
+// ===== Init =====
+function initApp() {
+  pinyinFn = window.pinyinPro.pinyin;
+  champions.forEach(function(c) {
+    c._tp = toPinyin(c.title);
+    c._np = toPinyin(c.name);
+  });
+  renderSkinPanel();
+  renderGrid();
+}
+
+// Wait for pinyin-pro to load
+if (window.pinyinPro) {
+  initApp();
+} else {
+  window.addEventListener("load", initApp);
+}
+</script>
+</body>
+</html>
